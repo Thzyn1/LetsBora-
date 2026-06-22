@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitação Rápida de Transporte</title>
+    <style>
+        /* Tela Inicial */
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121212; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: #555; text-align: center; }
+        .logo-grafite { font-family: 'Arial Black', sans-serif; font-size: 3rem; color: #25d366; text-transform: uppercase; text-shadow: 2px 2px #fff; }
+        .sub-logo { font-size: 1.5rem; color: #fff; margin-top: 10px; font-style: italic; }
+        .autor { margin-top: 50px; font-size: 0.8rem; color: #888; }
+
+        :root { 
+            --primary: #25d366; 
+            --dark: #128c7e; 
+            --accent: #075e54;
+            --bg: #eef2f3;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        h1 { text-align: center; color: var(--accent); font-size: 1.6rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .motorista-box { background: #fdfdfd; border: 2px solid #eee; padding: 20px; border-radius: 20px; display: flex; align-items: center; margin-bottom: 25px; flex-direction: column; text-align: center; transition: 0.3s; }
+        .motorista-box:hover { border-color: var(--primary); }
+        .motorista-foto { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 4px solid var(--primary); cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .motorista-info { font-size: 1rem; color: #333; }
+
+        label { display: block; margin-top: 18px; font-weight: 600; color: #555; font-size: 0.85rem; }
+        select, input { width: 100%; padding: 14px; margin-top: 8px; border: 2px solid #eee; border-radius: 12px; box-sizing: border-box; font-size: 1rem; transition: 0.3s; }
+        select:focus, input:focus { border-color: var(--primary); outline: none; background: #f9fff9; }
+        
+        button { width: 100%; padding: 16px; margin-top: 25px; background: var(--primary); color: white; border: none; border-radius: 15px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.4s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
+        button:hover { background: var(--dark); transform: translateY(-2px); }
+        
+        #resumo { margin-top: 30px; padding: 25px; border-radius: 20px; display: none; background: #f0fdf4; border: 1px solid var(--primary); }
+        .fidelidade-box { margin-top: 15px; font-size: 0.9rem; color: var(--accent); font-weight: bold; }
+        #cadastro { background: #f8f9fa; padding: 20px; border-radius: 20px; margin-bottom: 25px; border-left: 5px solid var(--primary); }
+        #fileInput { display: none; }
+        .dica-local { font-size: 0.75rem; color: #777; margin-top: 4px; font-style: italic; }
+        .btn-google { background: #db4437 !important; margin-top: 10px !important; }
+    </style>
+</head>
+<body>
+
+<div id="splash">
+    <div class="logo-grafite">VIAJE SEGURO</div>
+    <div class="sub-logo">Let's Bora</div>
+    <div class="autor">Feito por Thelison v.s</div>
+</div>
+
+<div class="container">
+    <h1>Solicitação de Transporte</h1>
+
+    <div id="cadastro">
+        <label>Seu Nome (Obrigatório):</label>
+        <input type="text" id="nomeCliente" placeholder="Ex: João Silva" required>
+        <label>Seu WhatsApp (Telefone):</label>
+        <input type="tel" id="telCliente" placeholder="Ex: (51) 99999-9999">
+        
+        <button onclick="loginGoogle()" class="btn-google" style="padding: 12px; font-size: 0.9rem;">Entrar com Gmail</button>
+        
+        <button onclick="salvarCadastro()" style="background-color: var(--accent); padding: 12px; margin-top: 15px; font-size: 0.9rem;">Salvar meus dados</button>
+    </div>
+
+    <div class="motorista-box">
+        <input type="file" id="fileInput" accept="image/*" onchange="alterarFoto(event)">
+        <img src="https://via.placeholder.com/150" alt="Foto Motorista" class="motorista-foto" id="imgMotorista" onclick="document.getElementById('fileInput').click()">
+        <small style="color: #999;">Clique na foto para alterar</small>
+        <div class="motorista-info">
+            <strong>Motorista: Thelison Verli Salles</strong><br>
+            Fiat Palio - Placa: DVL0F92
+        </div>
+    </div>
+    
+    <script>
+        // Esconder splash após 3 segundos
+        setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 3000);
+
+        const fotoSalva = localStorage.getItem('fotoMotorista');
+        if(fotoSalva) document.getElementById('imgMotorista').src = fotoSalva;
+
+        function alterarFoto(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const dataURL = reader.result;
+                document.getElementById('imgMotorista').src = dataURL;
+                localStorage.setItem('fotoMotorista', dataURL);
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function loginGoogle() { alert("Redirecionando para o Google Authentication..."); }
+
+        const bairros = ["Centro", "Bairro Carvalho", "Bairro Cônego Walter", "Bairro Dona Tereza", "Bairro Floresta", "Bairro Gaúcho", "Bairro Jardim", "Bairro Olaria", "Bairro São Carlos", "Bairro Viégas", "Bairro Getúlio Vargas", "Vila Nova"];
+        const gerarOpcoes = () => bairros.map(b => `<option value="${b}">${b}</option>`).join('');
+    </script>
+
+    <label>Bairro de Saída</label>
+    <select id="bairroOrigem"><script>document.write(gerarOpcoes());</script></select>
+    <input type="text" id="refOrigem" placeholder="Rua e Referência de Saída">
+    <div class="dica-local">Capture sua localização ou indique rua/número para não ter problemas na corrida.</div>
+    
+    <button onclick="capturarGPS()" style="background-color: #555; padding: 10px; font-size: 0.8rem; margin-top: 10px;">📍 Capturar Minha Localização (GPS)</button>
+
+    <label>Bairro de Chegada</label>
+    <select id="bairroDestino"><script>document.write(gerarOpcoes());</script></select>
+    <input type="text" id="refDestino" placeholder="Rua e Referência de Chegada">
+    <div class="dica-local">Indique rua e número ou ponto de referência para facilitar a chegada.</div>
+
+    <label>Distância da Corrida</label>
+    <select id="distancia">
+        <option value="10">2 a 8 km (R$ 10,00)</option>
+        <option value="15">Até 10 km (R$ 15,00)</option>
+        <option value="18">5 a 16 km (R$ 18,00)</option>
+    </select>
+
+    <label>Quantidade de passageiros</label>
+    <select id="passageiros">
+        <option value="0">1 pessoa</option>
+        <option value="2">2 pessoas (+ R$ 2,00)</option>
+        <option value="5">3 ou mais (+ R$ 5,00)</option>
+    </select>
+
+    <button onclick="calcular()">Calcular e Solicitar</button>
+
+    <div id="resumo">
+        <h3 style="margin-top:0; color: var(--accent);">Resumo</h3>
+        <p id="textoResumo"></p>
+        <div class="fidelidade-box" id="infoFidelidade"></div>
+        <button onclick="enviarWhatsApp()" style="background-color: var(--accent);">Enviar Pedido no WhatsApp</button>
+        
+        <button id="btnAbrirMapa" onclick="abrirMapaMotorista()" style="background-color: #2196F3; display: none; margin-top: 10px;">🗺️ Abrir Rota no Meu GPS</button>
+
+        <label style="margin-top:25px; color: #d32f2f;">Validação do Motorista:</label>
+        <input type="password" id="senhaMotorista" placeholder="Senha do Motorista">
+        <button onclick="validarPontos()" style="background-color: #ff9800; font-size: 0.9rem;">Validar Pontos da Corrida</button>
+    </div>
+</div>
+
+<script>
+    let coordsGPS = "";
+    function capturarGPS() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                coordsGPS = `${pos.coords.latitude},${pos.coords.longitude}`;
+                document.getElementById('refOrigem').value = "Localização GPS capturada!";
+                alert("GPS capturado!");
+            });
+        }
+    }
+
+    function abrirMapaMotorista() {
+        const origem = document.getElementById('bairroOrigem').value + " " + document.getElementById('refOrigem').value;
+        const destino = document.getElementById('bairroDestino').value + " " + document.getElementById('refDestino').value;
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origem)}&destination=${encodeURIComponent(destino)}&travelmode=driving`;
+        window.open(url, '_blank');
+    }
+
+    document.getElementById('nomeCliente').value = localStorage.getItem('nomeCli') || '';
+    document.getElementById('telCliente').value = localStorage.getItem('telCli') || '';
+
+    function salvarCadastro() {
+        const nome = document.getElementById('nomeCliente').value;
+        if (!nome) { alert("Por favor, preencha o seu nome!"); return; }
+        localStorage.setItem('nomeCli', nome);
+        localStorage.setItem('telCli', document.getElementById('telCliente').value);
+        alert("Dados salvos com sucesso!");
+    }
+
+    let dados = {};
+    let creditos = parseInt(localStorage.getItem('meusCreditos')) || 0;
+    let descontoDisponivel = localStorage.getItem('podeUsarDesconto') === 'true';
+
+    function calcular() {
+        const dist = parseInt(document.getElementById('distancia').value);
+        const pass = parseInt(document.getElementById('passageiros').value);
+        let total = dist + pass;
+        let descontoMsg = "";
+        if (descontoDisponivel) { total = total * 0.8; descontoMsg = "<br><strong style='color:green;'>✓ Desconto de 20% disponível!</strong>"; }
+        dados = { bOrigem: document.getElementById('bairroOrigem').value, refOrigem: document.getElementById('refOrigem').value, bDestino: document.getElementById('bairroDestino').value, refDestino: document.getElementById('refDestino').value, total: total };
+        document.getElementById('textoResumo').innerHTML = `<strong>De:</strong> ${dados.bOrigem} (${dados.refOrigem})<br><strong>Para:</strong> ${dados.bDestino} (${dados.refDestino})<br><strong>Total: R$ ${dados.total.toFixed(2)}</strong> ${descontoMsg}`;
+        document.getElementById('infoFidelidade').innerHTML = `Você possui ${creditos} pontos.`;
+        document.getElementById('resumo').style.display = 'block';
+        document.getElementById('btnAbrirMapa').style.display = 'block';
+    }
+
+    function validarPontos() {
+        if (document.getElementById('senhaMotorista').value === "7778") { 
+            creditos += 10;
+            if (creditos >= 100) { descontoDisponivel = true; localStorage.setItem('podeUsarDesconto', 'true'); }
+            localStorage.setItem('meusCreditos', creditos);
+            alert("Pontos validados! +10 pontos adicionados.");
+            document.getElementById('infoFidelidade').innerHTML = `Você possui ${creditos} pontos.`;
+        } else { alert("Senha incorreta!"); }
+    }
+
+    function enviarWhatsApp() {
+        if (descontoDisponivel) { creditos = 0; descontoDisponivel = false; localStorage.setItem('podeUsarDesconto', 'false'); localStorage.setItem('meusCreditos', creditos); }
+        const nome = localStorage.getItem('nomeCli') || "Não informado";
+        const tel = localStorage.getItem('telCli') || "Não informado";
+        const msg = `Olá, solicito uma corrida!%0A%0A*Cliente:* ${nome}%0A*Tel:* ${tel}%0A*Origem:* ${dados.bOrigem} - ${dados.refOrigem}%0A*Destino:* ${dados.bDestino} - ${dados.refDestino}%0A*Valor:* R$ ${dados.total.toFixed(2)}%0A%0A*Motorista:* Thelison Verli Salles (Fiat Palio - DVL0F92)`;
+        window.open(`https://wa.me/5551991245726?text=${msg}`, '_blank');
+    }
+</script>
+</body>
+</html>
